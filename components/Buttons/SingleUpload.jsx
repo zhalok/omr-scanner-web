@@ -29,17 +29,16 @@ export default function SingleFileUpload({
       <Button variant="contained" component="label" fullWidth>
         Choose File
         <input
+          // value={imageUri}
+          // value={image}
+          value={""}
           onChange={(e) => {
-            if (!webkitdirectory) {
-              setImage(e.target.files[0]);
-            } else {
-              setImage(e.target.files);
-            }
+            setImage(e.target.files[0]);
           }}
           hidden
           accept="image/*"
           type="file"
-          webkitdirectory={webkitdirectory}
+          // webkitdirectory={webkitdirectory}
         />
       </Button>
       {loading ? (

@@ -33,60 +33,64 @@ export default function Home() {
       alert("Pleaes select a file");
       return;
     }
+
     setLoading(true);
     const formData = new FormData();
     const name = uuidv4();
     formData.append("file", image);
     formData.append("name", name);
-    axios.post("/api/upload/total", formData).then((res) => {
-      setLoading(false);
+    axios
+      .post("/api/upload/total", formData)
+      .then((res) => {
+        setLoading(false);
 
-      if (res.data) {
-        console.log(res.data);
-        setImage(null);
-        setImageUri("");
-      }
-    });
-  };
-  const onZipUpdate = (metadata) => {
-    setProgress(metadata.percent);
-    console.log("progression: " + metadata.percent.toFixed(2) + " %");
-    if (metadata.currentFile) {
-      console.log("current file = " + metadata.currentFile);
-    }
-  };
-  const throttledZipUpdate = throttle(onZipUpdate, 50);
-  const uploadBatchFile = async (files) => {
-    const zip = new JSZip();
-
-    files.forEach((file) => {
-      zip.file(file.webkitRelativePath, file);
-    });
-    zip
-      .generateAsync({ type: "blob" }, throttledZipUpdate)
-      .then(function (content) {
-        // saveAs(content, "files.zip");
-        const formData = new FormData();
-        formData.append("folderzip", content);
-
-        console.log("ready to send to server", content);
+        if (res.data) {
+          console.log(res.data);
+          setImage(null);
+          setImageUri("");
+        }
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        setLoading(false);
+        console.log(e);
+      });
+  };
+
+  const uploadBatchFile = async (content) => {
+    const formData = new FormData();
+    formData.append("filezip", content);
+    formData.append("name", uuidv4());
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/upload/batchBuffer", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setLoading(false);
+      console.log(response);
+      window.location.replace(response.data.zipfilepath);
+    } catch (e) {
+      setLoading(false);
+      console.log(e);
+    }
   };
 
   return (
     <div className={styles.container} style={{}}>
       {uploadType == "Single" && (
         <div>
-          <Image
-            src={imageUri}
-            height={500}
-            width={500}
-            // alt="Upload an Image"
-          />
+          {imageUri && (
+            <Image
+              src={imageUri}
+              height={500}
+              width={500}
+              alt="Upload an Image"
+            />
+          )}
         </div>
       )}
-      {uploadType == "Batch" && (
+      {uploadType == "Batch" && progress != -1 && (
         <progress style={{ width: "100%" }} max="100" value={progress}>
           {progress?.toFixed(2)}%{" "}
         </progress>

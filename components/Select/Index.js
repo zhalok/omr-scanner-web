@@ -22,8 +22,10 @@ export default function BasicSelect({
           onChange={(e) => setSelectedItem(e.target.value)}
           label="Age"
         >
-          {items.map((item) => (
-            <MenuItem value={item}>{item}</MenuItem>
+          {items.map((item, Index) => (
+            <MenuItem key={Index} value={item}>
+              {item}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
