@@ -34,7 +34,7 @@ export default function SingleFileUpload({
         <input
           onChange={(e) => {
             setProgress(0);
-            // setImages(Array.from(e.target.files));
+
             const files = Array.from(e.target.files);
             const zip = new JSZip();
             files.forEach((file) => {
@@ -48,7 +48,7 @@ export default function SingleFileUpload({
           }}
           value={""}
           hidden
-          accept="image/*"
+          // accept="image/*"
           type="file"
           webkitdirectory="true"
         />

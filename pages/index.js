@@ -1,19 +1,11 @@
-import fileDownload from "js-file-download";
-import Head from "next/head";
 import { useEffect, useState } from "react";
 import SingleFileUpload from "../components/Buttons/SingleUpload";
 import BatchFileUpload from "../components/Buttons/BatchUpload";
-import DisplayResult from "../components/Display/DisplayResult";
 import styles from "../styles/Home.module.css";
 import axios from "../utils/axios";
-import PulseLoader from "react-spinners";
 import { v4 as uuidv4 } from "uuid";
-// import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import Select from "../components/Select/Index";
 import Image from "next/image";
-import JSZip from "jszip";
-import throttle from "lodash.throttle";
-import { saveAs } from "file-saver";
 
 export default function Home() {
   const [image, setImage] = useState(null);
@@ -40,14 +32,17 @@ export default function Home() {
     formData.append("file", image);
     formData.append("name", name);
     axios
-      .post("/api/upload/total", formData)
+      .post("/api/upload/single", formData)
       .then((res) => {
         setLoading(false);
 
         if (res.data) {
-          console.log(res.data);
+          // console.log(res.data);
+          window.open(res.data.answer_sheet_url, "_blank");
+          window.open(res.data.marked_sheet_url, "_blank");
           setImage(null);
           setImageUri("");
+          // console
         }
       })
       .catch((e) => {
